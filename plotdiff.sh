@@ -11,9 +11,9 @@
 
 # ==== Mechanism ====
 
-# For each image in the /files directory, compare it to every other file in the
+# For each image in the root directory, compare it to every other file in the
 # files directory by taking the sum of the differences between the plots (for
-# each pixel, output is (a-b) + (b-a) for images a, b
+# each pixel, output is (a-b) + (b-a) for images a, b)
 
 # ==== Dependencies ====
 
@@ -23,7 +23,6 @@
 # ==== Settings ====
 
 # input files
-FILES="files"
 OUTPUT="outfiles"
 
 TEMP="temp"
@@ -32,13 +31,16 @@ TEMP="temp"
 
 for f in *.png; do
     for g in *.png; do
-        echo $f
-        echo $g
-        outfile=${OUTPUT}/${f}${g}
-        echo ${OUTPUT}
-        #imagemagick convert file with blur 0x(blursize) and divide with the blur
-        convert $f $g -compose Minus -composite temp/temp1.png
-        convert $g $f -compose Minus -composite temp/temp2.png
-        convert temp/temp1.png temp/temp2.png -compose Plus -composite $outfile
+        if [ $f != $g ] #cull auto-comparisons
+        then
+            echo $f
+            echo $g
+            outfile=${OUTPUT}/${f}${g}
+            echo $outfile
+            #imagemagick convert file with blur 0x(blursize) and divide with the blur
+            convert $f $g -compose Minus -composite temp/temp1.png
+            convert $g $f -compose Minus -composite temp/temp2.png
+            convert temp/temp1.png temp/temp2.png -compose Plus -composite $outfile
+        fi
     done
 done
